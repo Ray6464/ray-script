@@ -1,6 +1,6 @@
 {
   "name": "ray-script",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Programming Language that Transpiles to JavaScript. Focuses on Readability, Brevity (small files), Code Base Management, and Eliminating Bad Programming Practices. Has amazing features that we've all needed very much! Focuses on writing code for NodeJS.",
   "main": "ray-script.min.js",
   "scripts": {

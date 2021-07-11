@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('ray-fs');
 const chalk = require('chalk');
 const flags = require('ray-flags');
@@ -9,6 +11,7 @@ String.prototype.removeSpaces = function() {return this.valueOf().split(' ').joi
 String.prototype.prepend = function(arg) {return arg + this.valueOf()}
 String.prototype.append = function(arg) {return this.valueOf()+arg}
 
+if (flags.v) sucide('v0.0.2');
 const fileURI = flags.f;
 if (flags.f === undefined) sucide("No file name was given!"); 
 if (path.extname(flags.f) != '.rs') sucide("Invalid file format! Use a .rs file."); 
