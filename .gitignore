@@ -1,3 +1,6 @@
+# support files
+support_modules/uglified
+
 # Tests and Uglified files
 tests
 test.js

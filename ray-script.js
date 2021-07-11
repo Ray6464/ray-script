@@ -5,6 +5,11 @@ const chalk = require('chalk');
 const flags = require('ray-flags');
 const {sucide} = require('sucide');
 const path = require('path');
+const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
+const {sucideIfNoValidSourceFileIsProvided,
+       transpiledConstantName} = require('./support_modules/uglified/built-in-methods.min.js');
+const {constFinderRegex, constNamesFinderRegex, emptyLineRegex,
+	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
 
 // custom prototypes
 String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
@@ -15,23 +20,9 @@ String.prototype.recurcivelyReplace = function(callback) {return callback(this.v
 if (flags.v) sucide('v0.0.4');
 const fileURI = flags.f;
 if (flags.f === undefined) sucide("No file name was given!"); 
-if (path.extname(flags.f) != '.rs') sucide("Invalid file format! Use a .rs file."); 
+sucideIfNoValidSourceFileIsProvided(fileURI);
 
 const fileContents = fs.readArray(fileURI).value;
-
-// RayScript syntax using regex
-const constFinderRegex = new RegExp(/^ *[A-Z\-]{3,} *=/); //const line finder
-const constNamesFinderRegex = new RegExp(/[A-Z\-]{3,}/g); // const name finder
-  // A constant assignment is defined in ray-script as a line with:
-  // A string that begins with any number of spaces,
-  // followed by Capital Alphabets and dashes \-
-  // followed by any number of spaces
-  // followed by an equal-to symbol
-
-const emptyLineRegex = new RegExp(/^ *$/);
-  // emptyLine is a line that starts and ends with whitespace
-const commentOnlyLineRegex = new RegExp(/^ *\/\//);
-  // commpentOnlyLine is a line that starts with any numbers of spaces, followed by two froward slashes
 
 function debugLog1(arg1, arg2) {/*console.log(arg1, arg2)*/}
 function debugLog2(arg1, arg2) {/*console.log(arg1, arg2)*/}
@@ -79,43 +70,20 @@ debugLog2(newFileContents);
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
 
-function transpiledConstantName(constant) {
-  const newConstantName = constant
-		.split('-')
-                .map(word => word.toLowerCase())
-                .map((word, index) => (index>0? camelify(word) : word))
-                .join('');
-  return newConstantName;
-}
-
 function getNameOfConstant(line) {
   const constantsPresent = line.match(constNamesFinderRegex);
   //console.log('Constant Names:', constantsPresent);
   return constantsPresent;
 }
 
-function camelify(word) {
-  const newWord = word.split('').map((alphabet, index) => (index>0? alphabet: alphabet.toUpperCase())).join('');
-  return newWord;
-}
-
-function rangeOfChara(chara, range) {
-  let str = "";
-  for (let i = 0; i < range; i++) { str += chara }
-  return str;
-}
-
 function writeAsConstant(line) {
-  //String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
-  //String.prototype.prepend = function(arg) {return arg + this.valueOf()}
-
   const leadingSpaces = line.match(/[A-Z]/i).index;
   const nameOfConstant = line
             .removeSpaces()
             .split('=')[0]
 	    .split('-')
             .map(word => word.toLowerCase())
-            .map((word, index) => (index>0? camelify(word) : word))
+            .map((word, index) => (index>0? capitalizeFirstChar(word) : word))
             .join('')
 	    .removeSpaces();
 
