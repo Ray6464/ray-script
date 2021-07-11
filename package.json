@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/Ray6464/ray-script/issues"
   },
-  "homepage": "https://github.com/Ray6464/ray-script#readme"
+  "homepage": "https://github.com/Ray6464/ray-script#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "ray-flags": "^0.0.7",
+    "ray-fs": "^2.2.1",
+    "sucide": "^1.0.1"
+  }
 }

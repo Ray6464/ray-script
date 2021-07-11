@@ -1,3 +1,8 @@
+# Tests and Uglified files
+tests
+test.js
+ray-script.min.js
+
 # Logs
 logs
 *.log
