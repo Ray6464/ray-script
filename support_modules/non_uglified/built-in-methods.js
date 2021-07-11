@@ -1,6 +1,7 @@
 const {sucide} = require('sucide');
 const path = require('path');
 const {capitalizeFirstChar} = require('ironberry').string;
+const {constNamesFinderRegex} = require('./ray-script-regex-collection.min.js');
 
 module.exports = {
   sucideIfNoValidSourceFileIsProvided: (fileName) => {
@@ -19,5 +20,9 @@ module.exports = {
   transpileKeyword: function(line, rsKey, jsKey) {
     if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey) }
     return line;
+  },
+  getNameOfConstant: function(line) {
+    const constantsPresent = line.match(constNamesFinderRegex);
+    return constantsPresent;
   }
 }

@@ -7,9 +7,9 @@ const {sucide} = require('sucide');
 const path = require('path');
 const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
 const {sucideIfNoValidSourceFileIsProvided,
-       transpiledConstantName,
+       transpiledConstantName, getNameOfConstant,
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
-const {constFinderRegex, constNamesFinderRegex, emptyLineRegex,
+const {constFinderRegex, /*constNamesFinderRegex,*/ emptyLineRegex,
 	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
 
 // custom prototypes
@@ -27,11 +27,6 @@ const fileContents = fs.readArray(fileURI).value;
 
 function debugLog1(arg1, arg2) {/*console.log(arg1, arg2)*/}
 function debugLog2(arg1, arg2) {/*console.log(arg1, arg2)*/}
-
-/*function transpileKeyword(line, rsKey, jsKey) {
-  if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey)}
-  return line;
-}*/
 
 // testing each line for RayScript Syntax Validity
 const compiledFileContents = [];
@@ -71,11 +66,11 @@ debugLog2(newFileContents);
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
 
-function getNameOfConstant(line) {
+/*function getNameOfConstant(line) {
   const constantsPresent = line.match(constNamesFinderRegex);
   //console.log('Constant Names:', constantsPresent);
   return constantsPresent;
-}
+}*/
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;
