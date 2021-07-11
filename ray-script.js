@@ -10,6 +10,7 @@ const path = require('path');
 String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
 String.prototype.prepend = function(arg) {return arg + this.valueOf()}
 String.prototype.append = function(arg) {return this.valueOf()+arg}
+String.prototype.recurcivelyReplace = function(callback) {return callback(this.valueOf())}
 
 if (flags.v) sucide('v0.0.2');
 const fileURI = flags.f;
@@ -19,7 +20,8 @@ if (path.extname(flags.f) != '.rs') sucide("Invalid file format! Use a .rs file.
 const fileContents = fs.readArray(fileURI).value;
 
 // RayScript syntax using regex
-const constFinderRegex = new RegExp(/^ *[A-Z\-]+ *=/);
+const constFinderRegex = new RegExp(/^ *[A-Z\-]{3,} *=/); //const line finder
+const constNamesFinderRegex = new RegExp(/[A-Z\-]{3,}/g); // const name finder
   // A constant assignment is defined in ray-script as a line with:
   // A string that begins with any number of spaces,
   // followed by Capital Alphabets and dashes \-
@@ -32,12 +34,19 @@ const commentOnlyLineRegex = new RegExp(/^ *\/\//);
   // commpentOnlyLine is a line that starts with any numbers of spaces, followed by two froward slashes
 
 function debugLog1(arg1, arg2) {/*console.log(arg1, arg2)*/}
-function debugLog2(arg1, arg2) {console.log(arg1, arg2)}
+function debugLog2(arg1, arg2) {/*console.log(arg1, arg2)*/}
 
+function transpileKeyword(line, rsKey, jsKey) {
+  if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey)}
+  return line;
+}
 
 // testing each line for RayScript Syntax Validity
 const compiledFileContents = [];
 for (let line of fileContents) {
+//  if (line.includes("console.log") {line.replace("console.log")}
+  line = transpileKeyword(line, "log.o", "console.log");
+// add code to support include
   if (constFinderRegex.test(line)) {
     debugLog1("qualifiedLine: <CONST>", line);
     compiledFileContents.push(writeAsConstant(line));
@@ -52,8 +61,14 @@ for (let line of fileContents) {
   }
   else {
     // Unqualified Lines are written as is since they may be JavaScript code
-    debugLog1("unqualifiedLine:", line)
-    compiledFileContents.push(line.append('//::BAD RayScript LINE'));
+    debugLog1("unqualifiedLine:", line);
+    const newLine = line.recurcivelyReplace((line) => {
+      for (let constant of getNameOfConstant(line)) {
+	line = line.replace(constant, transpiledConstantName(constant));
+      }
+      return line;
+    });
+    compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
     //sucide("Invalid Ray-Script Syntax:", line);
   }
 }
@@ -63,6 +78,21 @@ debugLog2(newFileContents);
 
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
+
+function transpiledConstantName(constant) {
+  const newConstantName = constant
+		.split('-')
+                .map(word => word.toLowerCase())
+                .map((word, index) => (index>0? camelify(word) : word))
+                .join('');
+  return newConstantName;
+}
+
+function getNameOfConstant(line) {
+  const constantsPresent = line.match(constNamesFinderRegex);
+  //console.log('Constant Names:', constantsPresent);
+  return constantsPresent;
+}
 
 function camelify(word) {
   const newWord = word.split('').map((alphabet, index) => (index>0? alphabet: alphabet.toUpperCase())).join('');
@@ -76,8 +106,8 @@ function rangeOfChara(chara, range) {
 }
 
 function writeAsConstant(line) {
-  String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
-  String.prototype.prepend = function(arg) {return arg + this.valueOf()}
+  //String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
+  //String.prototype.prepend = function(arg) {return arg + this.valueOf()}
 
   const leadingSpaces = line.match(/[A-Z]/i).index;
   const nameOfConstant = line
