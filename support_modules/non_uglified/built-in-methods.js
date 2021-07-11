@@ -15,5 +15,9 @@ module.exports = {
                 .map((word, index) => (index>0? capitalizeFirstChar(word) : word))
                 .join('');
     return newConstantName;
+  },
+  transpileKeyword: function(line, rsKey, jsKey) {
+    if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey) }
+    return line;
   }
 }

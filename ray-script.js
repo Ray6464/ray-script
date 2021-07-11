@@ -7,7 +7,8 @@ const {sucide} = require('sucide');
 const path = require('path');
 const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
 const {sucideIfNoValidSourceFileIsProvided,
-       transpiledConstantName} = require('./support_modules/uglified/built-in-methods.min.js');
+       transpiledConstantName,
+       transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
 const {constFinderRegex, constNamesFinderRegex, emptyLineRegex,
 	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
 
@@ -27,10 +28,10 @@ const fileContents = fs.readArray(fileURI).value;
 function debugLog1(arg1, arg2) {/*console.log(arg1, arg2)*/}
 function debugLog2(arg1, arg2) {/*console.log(arg1, arg2)*/}
 
-function transpileKeyword(line, rsKey, jsKey) {
+/*function transpileKeyword(line, rsKey, jsKey) {
   if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey)}
   return line;
-}
+}*/
 
 // testing each line for RayScript Syntax Validity
 const compiledFileContents = [];
