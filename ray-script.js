@@ -12,7 +12,7 @@ String.prototype.prepend = function(arg) {return arg + this.valueOf()}
 String.prototype.append = function(arg) {return this.valueOf()+arg}
 String.prototype.recurcivelyReplace = function(callback) {return callback(this.valueOf())}
 
-if (flags.v) sucide('v0.0.2');
+if (flags.v) sucide('v0.0.4');
 const fileURI = flags.f;
 if (flags.f === undefined) sucide("No file name was given!"); 
 if (path.extname(flags.f) != '.rs') sucide("Invalid file format! Use a .rs file."); 

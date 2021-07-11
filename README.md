@@ -26,7 +26,7 @@ RayScript:
 ```javascript
 HELLO-WORLD = "hello world";
 
-console.log(HELLO-WORLD);
+log.o(HELLO-WORLD);
 ```
 
 Compiles to the following JavaScript:
