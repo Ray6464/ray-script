@@ -1,0 +1,24 @@
+{
+  "name": "ray-script",
+  "version": "0.0.1",
+  "description": "A Programming Language that Transpiles to JavaScript. Focuses on Readability, Brevity (small files), Code Base Management, and Eliminating Bad Programming Practices. Has amazing features that we've all needed very much! Focuses on writing code for NodeJS.",
+  "main": "ray-script.min.js",
+  "scripts": {
+    "test": "node tests/mainTest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ray6464/ray-script.git"
+  },
+  "keywords": [
+    "ray-script",
+    "java-script",
+    "ray-userland"
+  ],
+  "author": "Ray Voice",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ray6464/ray-script/issues"
+  },
+  "homepage": "https://github.com/Ray6464/ray-script#readme"
+}
