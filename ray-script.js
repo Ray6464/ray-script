@@ -35,39 +35,24 @@ const compiledFileContents = [];
 for (let line of fileContents) {
 //  if (line.includes("console.log") {line.replace("console.log")}
   line = transpileKeyword(line, "log.o", "console.log");
-// here: add code to support include
-  /*switch(lineStatus(line)) {
-	  case '<CONST>':
-  }*/
-
+// here: add code to support #include <fileName.h>
+  debugLog1(lineStatus(line), line);
   switch(lineStatus(line)) {
     case lineStatusCodes.constCode:
-      debugLog1("qualifiedLine: <CONST>", line);
       compiledFileContents.push(writeAsConstant(line));
       break;
 
     case lineStatusCodes.emptyCode:
-      debugLog1("qualifiedLine: <EMPTY>", line);
       compiledFileContents.push(line);
       break;
 
     case lineStatusCodes.commentOnlyCode:
-      debugLog1("qualifiedLine: <COMMENT-ONLY>", line);
       compiledFileContents.push(line);
       break;
 
-    case lineStatusCodes.notFoundCode:
-
-      // Unqualified Lines are written as is since they may be JavaScript code
-      debugLog1("unqualifiedLine:", line);
-      const newLine = line.recurcivelyReplace((line) => {
-        for (let constant of getNameOfConstant(line)) {
-	  line = line.replace(constant, transpiledConstantName(constant));
-        }
-        return line;
-      });
+    case lineStatusCodes.notFoundCode: // Written as is!
+      const newLine = line.recurcivelyReplace(transpileAllConstants);
       compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
-      //sucide("Invalid Ray-Script Syntax:", line);
       break;
 
     default:
@@ -80,6 +65,13 @@ debugLog2(newFileContents);
 
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
+
+function transpileAllConstants(line) {
+  for (let constant of getNameOfConstant(line)) {
+    line = line.replace(constant, transpiledConstantName(constant));
+  }
+  return line;
+}
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;
