@@ -11,12 +11,14 @@ const {sucideIfNoValidSourceFileIsProvided,
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
 const {constFinderRegex, /*constNamesFinderRegex,*/ emptyLineRegex,
 	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
+const lineStatusCodes = require('./support_modules/uglified/line-status-codes.js');
 
 // custom prototypes
 String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
 String.prototype.prepend = function(arg) {return arg + this.valueOf()}
 String.prototype.append = function(arg) {return this.valueOf()+arg}
 String.prototype.recurcivelyReplace = function(callback) {return callback(this.valueOf())}
+String.prototype.testRegex = function(regex) {return regex.test(this.valueOf())}
 
 if (flags.v) sucide('v0.0.4');
 const fileURI = flags.f;
@@ -33,7 +35,12 @@ const compiledFileContents = [];
 for (let line of fileContents) {
 //  if (line.includes("console.log") {line.replace("console.log")}
   line = transpileKeyword(line, "log.o", "console.log");
-// add code to support include
+// here: add code to support include
+  /*switch(lineStatus(line)) {
+	  case '<CONST>':
+  }*/
+// Starts here conditional
+  console.log(lineStatus(line));
   if (constFinderRegex.test(line)) {
     debugLog1("qualifiedLine: <CONST>", line);
     compiledFileContents.push(writeAsConstant(line));
@@ -58,6 +65,7 @@ for (let line of fileContents) {
     compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
     //sucide("Invalid Ray-Script Syntax:", line);
   }
+//   Ends here conditional */
 }
 
 const newFileContents = compiledFileContents.join('\n');
@@ -65,12 +73,6 @@ debugLog2(newFileContents);
 
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
-
-/*function getNameOfConstant(line) {
-  const constantsPresent = line.match(constNamesFinderRegex);
-  //console.log('Constant Names:', constantsPresent);
-  return constantsPresent;
-}*/
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;
@@ -88,6 +90,13 @@ function writeAsConstant(line) {
 //  console.log("old Line:", line);
 //  console.log("new Line:", newLine);
   return newLine;
+}
+
+function lineStatus(line) {
+  if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
+  else if (emptyLineRegex.test(line)) return lineStatusCodes.emptyCode;
+  else if (commentOnlyLineRegex.test(line)) return lineStatusCodes.commentOnlyCode;
+  else return lineStatusCodes.notFoundCode;
 }
 
 function initializeRayScriptMethods() {
