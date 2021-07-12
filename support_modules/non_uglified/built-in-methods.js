@@ -1,7 +1,10 @@
 const {sucide} = require('sucide');
 const path = require('path');
 const {capitalizeFirstChar} = require('ironberry').string;
-const {constNamesFinderRegex} = require('./ray-script-regex-collection.min.js');
+//const {constNamesFinderRegex} = require('./ray-script-regex-collection.min.js');
+const {constFinderRegex, constNamesFinderRegex, emptyLineRegex,
+	commentOnlyLineRegex} = require('./ray-script-regex-collection.min.js');
+const lineStatusCodes = require('./line-status-codes.min.js');
 
 module.exports = {
   sucideIfNoValidSourceFileIsProvided: (fileName) => {
@@ -24,5 +27,11 @@ module.exports = {
   getNameOfConstant: function(line) {
     const constantsPresent = line.match(constNamesFinderRegex);
     return constantsPresent;
+  },
+  lineStatus: function(line) {
+    if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
+    else if (emptyLineRegex.test(line)) return lineStatusCodes.emptyCode;
+    else if (commentOnlyLineRegex.test(line)) return lineStatusCodes.commentOnlyCode;
+    else return lineStatusCodes.notFoundCode;
   }
 }
