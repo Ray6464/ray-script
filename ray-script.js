@@ -11,7 +11,7 @@ const {sucideIfNoValidSourceFileIsProvided,
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
 const {constFinderRegex, /*constNamesFinderRegex,*/ emptyLineRegex,
 	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
-const lineStatusCodes = require('./support_modules/uglified/line-status-codes.js');
+const lineStatusCodes = require('./support_modules/uglified/line-status-codes.min.js');
 
 // custom prototypes
 String.prototype.removeSpaces = function() {return this.valueOf().split(' ').join('')}
@@ -39,33 +39,40 @@ for (let line of fileContents) {
   /*switch(lineStatus(line)) {
 	  case '<CONST>':
   }*/
-// Starts here conditional
-  console.log(lineStatus(line));
-  if (constFinderRegex.test(line)) {
-    debugLog1("qualifiedLine: <CONST>", line);
-    compiledFileContents.push(writeAsConstant(line));
+
+  switch(lineStatus(line)) {
+    case lineStatusCodes.constCode:
+      debugLog1("qualifiedLine: <CONST>", line);
+      compiledFileContents.push(writeAsConstant(line));
+      break;
+
+    case lineStatusCodes.emptyCode:
+      debugLog1("qualifiedLine: <EMPTY>", line);
+      compiledFileContents.push(line);
+      break;
+
+    case lineStatusCodes.commentOnlyCode:
+      debugLog1("qualifiedLine: <COMMENT-ONLY>", line);
+      compiledFileContents.push(line);
+      break;
+
+    case lineStatusCodes.notFoundCode:
+
+      // Unqualified Lines are written as is since they may be JavaScript code
+      debugLog1("unqualifiedLine:", line);
+      const newLine = line.recurcivelyReplace((line) => {
+        for (let constant of getNameOfConstant(line)) {
+	  line = line.replace(constant, transpiledConstantName(constant));
+        }
+        return line;
+      });
+      compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
+      //sucide("Invalid Ray-Script Syntax:", line);
+      break;
+
+    default:
+      sucide('There is an un-acceptable error on the followin line:', line);
   }
-  else if (emptyLineRegex.test(line)) {
-    debugLog1("qualifiedLine: <EMPTY>", line);
-    compiledFileContents.push(line);
-  }
-  else if (commentOnlyLineRegex.test(line)) {
-    debugLog1("qualifiedLine: <COMMENT-ONLY>", line);
-    compiledFileContents.push(line);
-  }
-  else {
-    // Unqualified Lines are written as is since they may be JavaScript code
-    debugLog1("unqualifiedLine:", line);
-    const newLine = line.recurcivelyReplace((line) => {
-      for (let constant of getNameOfConstant(line)) {
-	line = line.replace(constant, transpiledConstantName(constant));
-      }
-      return line;
-    });
-    compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
-    //sucide("Invalid Ray-Script Syntax:", line);
-  }
-//   Ends here conditional */
 }
 
 const newFileContents = compiledFileContents.join('\n');
