@@ -26,22 +26,10 @@ module.exports = {
       sucide("Invalid file format! Use a .rs file.")
     }
   },
-/*  transpiledConstantName: function (constant) {
-    const newConstantName = constant
-		.split('-')
-                .map(word => word.toLowerCase())
-                .map((word, index) => (index>0? capitalizeFirstChar(word) : word))
-                .join('');
-    return newConstantName;
-  },*/
   transpileKeyword: function(line, rsKey, jsKey) {
     if (line.includes(rsKey)) { line = line.replace(rsKey, jsKey) }
     return line;
   },
-/*  getNameOfConstant: function(line) {
-    const constantsPresent = line.match(constNamesFinderRegex);
-    return constantsPresent;
-  },*/
   lineStatus: function(line) {
     if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
     else if (emptyLineRegex.test(line)) return lineStatusCodes.emptyCode;

@@ -5,9 +5,9 @@ const chalk = require('chalk');
 const flags = require('ray-flags');
 const {sucide} = require('sucide');
 const path = require('path');
+//const { parseIncludeDirectives } = require('./support_modules/uglified/ray-include-lib.min.js');
 const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
 const {sucideIfNoValidSourceFileIsProvided, lineStatus, transpileAllConstants,
-       /*transpiledConstantName,*/ /*getNameOfConstant,*/
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
 //const {constFinderRegex, /*constNamesFinderRegex,*/ emptyLineRegex,
 //	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
@@ -64,14 +64,10 @@ const newFileContents = compiledFileContents.join('\n');
 debugLog2(newFileContents);
 
 const newFileName = path.basename(fileURI, '.rs')+'.js';
-fs.write(newFileName, newFileContents);
 
-/*function transpileAllConstants(line) {
-  for (let constant of getNameOfConstant(line)) {
-    line = line.replace(constant, transpiledConstantName(constant));
-  }
-  return line;
-}*/
+//const parsedIncludeFileContents = parseIncludeDirectives(newFileContents);
+//fs.write(newFileName, parsedIncludeFileContents);
+fs.write(newFileName, newFileContents);
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;
