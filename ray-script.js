@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const flags = require('ray-flags');
 const {sucide} = require('sucide');
 const path = require('path');
-//const { parseIncludeDirectives } = require('./support_modules/uglified/ray-include-lib.min.js');
+const { parseIncludeDirectives } = require('./support_modules/uglified/ray-include-lib.min.js');
 const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
 const {sucideIfNoValidSourceFileIsProvided, lineStatus, transpileAllConstants,
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
@@ -38,6 +38,10 @@ for (let line of fileContents) {
 // here: add code to support #include <fileName.h>
   debugLog1(lineStatus(line), line);
   switch(lineStatus(line)) {
+    case lineStatusCodes.includeCode:
+      compiledFileContents.push(line); // will be parsed later
+      break;
+
     case lineStatusCodes.constCode:
       compiledFileContents.push(writeAsConstant(line));
       break;
@@ -50,7 +54,7 @@ for (let line of fileContents) {
       compiledFileContents.push(line);
       break;
 
-    case lineStatusCodes.notFoundCode: // Written as is!
+    case lineStatusCodes.notFoundCode: // Written as is! Just parse for namespaces
       const newLine = line.recurcivelyReplace(transpileAllConstants);
       compiledFileContents.push(newLine.append('//::BAD RayScript LINE'));
       break;
@@ -65,9 +69,9 @@ debugLog2(newFileContents);
 
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 
-//const parsedIncludeFileContents = parseIncludeDirectives(newFileContents);
-//fs.write(newFileName, parsedIncludeFileContents);
-fs.write(newFileName, newFileContents);
+const parsedIncludeFileContents = parseIncludeDirectives(newFileContents.split('\n'));
+fs.write(newFileName, parsedIncludeFileContents);
+//fs.write(newFileName, newFileContents);
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;

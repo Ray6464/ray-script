@@ -2,7 +2,7 @@ const {sucide} = require('sucide');
 const path = require('path');
 const {capitalizeFirstChar} = require('ironberry').string;
 //const {constNamesFinderRegex} = require('./ray-script-regex-collection.min.js');
-const {constFinderRegex, constNamesFinderRegex, emptyLineRegex,
+const {constFinderRegex, constNamesFinderRegex, emptyLineRegex, includeRegex,
 	commentOnlyLineRegex} = require('./ray-script-regex-collection.min.js');
 const lineStatusCodes = require('./line-status-codes.min.js');
 
@@ -31,7 +31,8 @@ module.exports = {
     return line;
   },
   lineStatus: function(line) {
-    if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
+    if (includeRegex.test(line)) return lineStatusCodes.includeCode;
+    else if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
     else if (emptyLineRegex.test(line)) return lineStatusCodes.emptyCode;
     else if (commentOnlyLineRegex.test(line)) return lineStatusCodes.commentOnlyCode;
     else return lineStatusCodes.notFoundCode;

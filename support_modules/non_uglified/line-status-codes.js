@@ -1,4 +1,5 @@
 module.exports = {
+  includeCode: '<INCLUDE>',
   constCode: '<CONST>',
   emptyCode: '<EMPTY>',
   commentOnlyCode: '<COMMENT-ONLY>',

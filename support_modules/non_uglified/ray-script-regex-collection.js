@@ -7,11 +7,9 @@ module.exports = {
   // followed by any number of spaces
   // followed by an equal-to symbol
 
+  includeRegex: new RegExp(/^ *#include <[\w\.\/]+>/),
   emptyLineRegex: new RegExp(/^ *$/),
   // emptyLine is a line that starts and ends with whitespace
   commentOnlyLineRegex: new RegExp(/^ *\/\//),
   // commpentOnlyLine is a line that starts with any numbers of spaces, followed by two froward slashes
-
-
-
 }
