@@ -6,8 +6,8 @@ const flags = require('ray-flags');
 const {sucide} = require('sucide');
 const path = require('path');
 const {rangeOfChara, capitalizeFirstChar} = require('ironberry').string;
-const {sucideIfNoValidSourceFileIsProvided, lineStatus,
-       transpiledConstantName, getNameOfConstant,
+const {sucideIfNoValidSourceFileIsProvided, lineStatus, transpileAllConstants,
+       /*transpiledConstantName,*/ /*getNameOfConstant,*/
        transpileKeyword} = require('./support_modules/uglified/built-in-methods.min.js');
 //const {constFinderRegex, /*constNamesFinderRegex,*/ emptyLineRegex,
 //	commentOnlyLineRegex} = require('./support_modules/uglified/ray-script-regex-collection.min.js');
@@ -66,12 +66,12 @@ debugLog2(newFileContents);
 const newFileName = path.basename(fileURI, '.rs')+'.js';
 fs.write(newFileName, newFileContents);
 
-function transpileAllConstants(line) {
+/*function transpileAllConstants(line) {
   for (let constant of getNameOfConstant(line)) {
     line = line.replace(constant, transpiledConstantName(constant));
   }
   return line;
-}
+}*/
 
 function writeAsConstant(line) {
   const leadingSpaces = line.match(/[A-Z]/i).index;
@@ -90,13 +90,6 @@ function writeAsConstant(line) {
 //  console.log("new Line:", newLine);
   return newLine;
 }
-
-/*function lineStatus(line) {
-  if (constFinderRegex.test(line)) return lineStatusCodes.constCode;
-  else if (emptyLineRegex.test(line)) return lineStatusCodes.emptyCode;
-  else if (commentOnlyLineRegex.test(line)) return lineStatusCodes.commentOnlyCode;
-  else return lineStatusCodes.notFoundCode;
-}*/
 
 function initializeRayScriptMethods() {
   // add new methods in RayScript here, write them where the #include Methods is shown in the user's js file
